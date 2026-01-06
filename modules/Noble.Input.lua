@@ -53,15 +53,21 @@ end
 -- @see clearHandler
 -- @see setEnabled
 function Noble.Input.setHandler(__inputHandler)
+	-- Unregister previous handler from InputManager if exists
 	if (currentHandler ~= nil) then
-		playdate.inputHandlers.pop()
+		if Game.inputManager ~= nil then
+			Game.inputManager:unregister('nobleScene')
+		end
 	end
 
 	if (__inputHandler == nil) then
 		currentHandler = nil
 	else
 		currentHandler = __inputHandler
-		playdate.inputHandlers.push(__inputHandler, true)	-- The Playdate SDK allows for multiple inputHandlers to mix and match methods. Noble Engine removes this functionality.
+		-- Register with InputManager instead of direct push
+		if Game.inputManager ~= nil then
+			Game.inputManager:register('nobleScene', __inputHandler, InputManager.Priority.GAMEPLAY)
+		end
 	end
 end
 
